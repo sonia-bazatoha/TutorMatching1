@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="page-wrapper">
+
+    <div class="page-hero">
+        <h1>About <span class="hero-accent">CampusTutor</span></h1>
+        <p>A campus-based peer learning platform connecting students with senior tutors who have already mastered the courses they're taking.</p>
+    </div>
+
+    <main class="main-content">
+
+        <!-- Mission + Photo -->
+        <div style="display:flex; gap:40px; align-items:center; margin-bottom:48px; flex-wrap:wrap;">
+            <div style="flex:1; min-width:280px;">
+                <h2 class="section-heading">Our Mission</h2>
+                <div class="ct-card" style="border-left:5px solid var(--gold); border-top:none;">
+                    <p style="font-size:1.05rem; line-height:1.9;">
+                        To improve academic performance by building a community where students learn directly from peers who have already mastered the subjects they're studying — making support more accessible, relatable, and effective.
+                    </p>
+                </div>
+            </div>
+            <div style="flex:1; min-width:260px; max-width:480px;">
+                <img src="{% static 'img/5.jpeg' %}" alt="Students studying together"
+                     class="about-photo"
+                     style="width:100%; border-radius:20px; box-shadow:0 20px 48px rgba(0,31,84,0.25); display:block;">
+            </div>
+        </div>
+
+        <!-- Benefits + Photo -->
+        <div style="display:flex; gap:40px; align-items:flex-start; margin-bottom:48px; flex-wrap:wrap;">
+
+            <div style="flex:1; min-width:260px; max-width:380px;">
+                <img src="{% static 'img/6.jpeg' %}" alt="Tutor helping a student"
+                     class="about-photo"
+                     style="width:100%; border-radius:20px; box-shadow:0 20px 48px rgba(0,31,84,0.25); display:block;">
+            </div>
+
+            <div style="flex:2; min-width:280px;">
+                <div class="about-row">
+                    <div class="ct-section">
+                        <h2 class="section-heading">Benefits for Students 🧑‍🎓</h2>
+                        <ul class="benefit-list">
+                            <li>Learn from seniors who have already passed your courses</li>
+                            <li>Get simple, practical, student-to-student explanations</li>
+                            <li>Improve your grades faster with personalised support</li>
+                            <li>Build confidence in difficult subjects</li>
+                            <li>Access support at affordable, student-friendly rates</li>
+                        </ul>
+                    </div>
+                    <div class="ct-section">
+                        <h2 class="section-heading">Benefits for Tutors 👨‍🏫</h2>
+                        <ul class="benefit-list">
+                            <li>Strengthen your understanding by teaching others</li>
+                            <li>Develop communication and leadership skills</li>
+                            <li>Build valuable mentoring experience for your CV</li>
+                            <li>Earn a small income while you study</li>
+                            <li>Grow your academic and professional profile</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Who & How -->
+        <div class="about-row" style="margin-bottom:48px;">
+
+            <div class="ct-section">
+                <h2 class="section-heading">Who Is It For?</h2>
+                <div class="ct-card">
+                    <p style="line-height:1.8;">
+                        CampusTutor is designed for university students struggling with certain subjects and needing extra support — and for senior students who want to share their knowledge, develop teaching skills, and earn while they study.
+                    </p>
+                </div>
+            </div>
+
+            <div class="ct-section">
+                <h2 class="section-heading">How It Works</h2>
+                <ol class="steps-list">
+                    <li>Search for a tutor by subject</li>
+                    <li>View profiles and reviews</li>
+                    <li>Book a session</li>
+                    <li>Learn and improve</li>
+                    <li>Leave a review after your session</li>
+                </ol>
+            </div>
+
+        </div>
+
+        <!-- Vision + Photo -->
+        <div style="position:relative; margin-bottom:48px; border-radius:var(--radius-lg); overflow:hidden;">
+            <img src="{% static 'img/7.jpeg' %}" alt="Campus community"
+     style="width:100%; height:320px; object-fit:cover; object-position:center 20%; display:block; filter:brightness(0.4);">
+            <div style="position:absolute; top:0; left:0; right:0; bottom:0;
+                        display:flex; flex-direction:column; align-items:center;
+                        justify-content:center; padding:40px; text-align:center;">
+                <h2 class="section-heading" style="color:var(--gold); border-color:var(--gold);">Our Vision</h2>
+                <p style="font-size:1.15rem; line-height:1.9; color:white; max-width:640px; margin-top:12px;">
+                    "To create a strong academic community where students support each other, grow together, and make learning easier, more accessible, and more human." 🌍
+                </p>
+            </div>
+        </div>
+
+        <!-- Contact -->
+        <div class="ct-section">
+            <h2 class="section-heading">Contact Us</h2>
+            <div class="ct-card" style="max-width:400px;">
+                <p style="margin-bottom:10px;">📧 <strong>Email:</strong> support@campustutor.com</p>
+                <p>🚩 <a href="#" style="color:var(--navy); font-weight:600; text-decoration:underline;">Report a problem</a></p>
+            </div>
+        </div>
+
+    </main>
+</div>
+{% endblock %}

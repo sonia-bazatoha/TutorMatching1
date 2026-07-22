@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-wrapper">
+
+    <div class="page-hero">
+        <h1>Become a <span class="hero-accent">Tutor</span>  Share Your Knowledge</h1>
+        <p>Help fellow students succeed, strengthen your own understanding, and build real-world experience while studying.</p>
+    </div>
+
+    <main class="main-content">
+
+        <!-- Info Row -->
+        <div class="about-row" style="margin-bottom:48px;">
+
+            <div class="ct-section">
+                <h2 class="section-heading">Why Tutor with Us?</h2>
+                <ul class="benefit-list">
+                    <li>Deepen your knowledge by explaining concepts to others</li>
+                    <li>Sharpen your communication and problem-solving skills</li>
+                    <li>Earn a small income while still studying</li>
+                    <li>Build mentoring experience that strengthens your CV</li>
+                    <li>Grow your academic leadership profile</li>
+                </ul>
+            </div>
+
+            <div class="ct-section">
+                <h2 class="section-heading">Get Started</h2>
+                <ol class="steps-list">
+                    <li>Create your tutor account below</li>
+                    <li>Complete your profile — subjects, availability, bio</li>
+                    <li>Get matched with students who need your help</li>
+                    <li>Accept sessions and start teaching</li>
+                </ol>
+            </div>
+
+        </div>
+
+        <!-- Registration Form -->
+        <div style="display:flex; justify-content:center;">
+            <div class="form-card">
+                <h2 class="section-heading">Join as a Tutor</h2>
+                <p class="text-muted mb-md" style="font-size:.92rem;">
+                    Create your account to get started.
+                </p>
+
+                
+
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <div class="form-group">
+                        <label class="form-label" for="id_username">Username</label>
+                        <input class="form-control" type="text" name="username" id="id_username"
+                            placeholder="Choose a username" required>
+                        {% if form.username.errors %}
+                            <p style="color:red; font-size:.85rem;">{{ form.username.errors|join:", " }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="id_first_name">First Name</label>
+                        <input class="form-control" type="text" name="first_name" id="id_first_name"
+                            placeholder="Enter your first name">
+                        {% if form.first_name.errors %}
+                            <p style="color:red; font-size:.85rem;">{{ form.first_name.errors|join:", " }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="id_last_name">Last Name</label>
+                        <input class="form-control" type="text" name="last_name" id="id_last_name"
+                            placeholder="Enter your last name">
+                        {% if form.last_name.errors %}
+                            <p style="color:red; font-size:.85rem;">{{ form.last_name.errors|join:", " }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="id_email">Email Address</label>
+                        <input class="form-control" type="email" name="email" id="id_email"
+                            placeholder="your@university.edu">
+                        {% if form.email.errors %}
+                            <p style="color:red; font-size:.85rem;">{{ form.email.errors|join:", " }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="id_phone_number">Phone Number</label>
+                        <input class="form-control" type="text" name="phone_number" id="id_phone_number"
+                            placeholder="Enter your phone number">
+                        {% if form.phone_number.errors %}
+                            <p style="color:red; font-size:.85rem;">{{ form.phone_number.errors|join:", " }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="id_password1">Password</label>
+                        <input class="form-control" type="password" name="password1" id="id_password1"
+                            placeholder="Create a strong password" required>
+                        {% if form.password1.errors %}
+                            <p style="color:red; font-size:.85rem;">{{ form.password1.errors|join:", " }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="id_password2">Confirm Password</label>
+                        <input class="form-control" type="password" name="password2" id="id_password2"
+                            placeholder="Repeat your password" required>
+                        {% if form.password2.errors %}
+                            <p style="color:red; font-size:.85rem;">{{ form.password2.errors|join:", " }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="id_qualification">Qualification</label>
+                        <input class="form-control" type="text" name="qualification" id="id_qualification"
+                            placeholder="e.g. 3rd Year Computer Science">
+                        {% if form.qualification.errors %}
+                            <p style="color:red; font-size:.85rem;">{{ form.qualification.errors|join:", " }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="id_years_of_experience">Years of Experience</label>
+                        <input class="form-control" type="number" name="years_of_experience" id="id_years_of_experience"
+                            placeholder="e.g. 2" min="0">
+                        {% if form.years_of_experience.errors %}
+                            <p style="color:red; font-size:.85rem;">{{ form.years_of_experience.errors|join:", " }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="id_hourly_rate">Hourly Rate (UGX)</label>
+                        <input class="form-control" type="number" name="hourly_rate" id="id_hourly_rate"
+                            placeholder="e.g. 10000" min="0">
+                        {% if form.hourly_rate.errors %}
+                            <p style="color:red; font-size:.85rem;">{{ form.hourly_rate.errors|join:", " }}</p>
+                        {% endif %}
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-full">
+                        Create Tutor Account
+                    </button>
+                </form>
+
+                <p class="auth-footer-link mt-md">
+                    Already have an account? <a href="{% url 'login' %}">Sign in</a>
+                </p>
+            </div>
+        </div>
+
+    </main>
+</div>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-wrapper">
+    <div class="page-hero">
+        <h1>Report a <span class="hero-accent">Problem</span></h1>
+        <p>If you experience bad behaviour, fake accounts, or any issue on the platform, let us know. Our admin team reviews every report.</p>
+    </div>
+
+    <main class="main-content" style="display:flex; justify-content:center; padding-top:48px; padding-bottom:64px;">
+        <div class="form-card complaint-wrapper" style="max-width:640px; width:100%;">
+            <h2 class="section-heading">Complaint Form</h2>
+
+            <form method="POST">
+                {% csrf_token %}
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                    <div class="form-group">
+                        <label class="form-label" for="id_role">Your Role</label>
+                        {{ form.role }}
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="id_report_type">Report Type</label>
+                        {{ form.report_type }}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="id_target_user">
+                        User Name / ID
+                        <span style="font-weight:400; color:var(--text-muted);">(optional for platform issues)</span>
+                    </label>
+                    {{ form.target_user }}
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="id_reason">Reason</label>
+                    {{ form.reason }}
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="id_description">Description</label>
+                    {{ form.description }}
+                </div>
+
+                <div class="action-row">
+                    <button class="btn btn-primary" type="submit">Submit Report</button>
+                    <a class="btn btn-outline" href="{% url 'home' %}">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>
+{% endblock %}

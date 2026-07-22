@@ -1,0 +1,241 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="padding-top:80px; display:flex; flex-direction:column; min-height:100vh;">
+    <div class="dash-layout" style="flex:1;">
+
+        <!-- SIDEBAR -->
+        <aside class="dash-sidebar">
+            <div style="text-align:center; margin-bottom:24px;">
+                <div class="tutor-avatar" style="width:84px; height:84px; margin:0 auto 10px;">
+                    {% if request.user.profile_picture %}
+                    <img src="{{ request.user.profile_picture.url }}" alt="Profile" class="clickable-avatar"
+                         style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+                    {% else %}
+                    👨‍🏫
+                    {% endif %}
+                </div>
+                <p style="font-weight:700; font-size:.95rem;">{{ request.user.first_name }} {{ request.user.last_name }}</p>
+                <span class="badge badge-active" style="margin-top:4px;">Tutor</span>
+            </div>
+
+            <span class="sidebar-label">Navigation</span>
+            <a class="sidebar-link active" href="{% url 'tutor_dashboard' %}">
+                <span class="icon">🏠</span> Dashboard
+            </a>
+            <a class="sidebar-link" href="{% url 'edit_tutor_profile' %}">
+                <span class="icon">✏️</span> Edit Profile & Availability
+            </a>
+
+             <a class="sidebar-link" href="{% url 'submit_complaint' %}" style="color:#ef4444;">
+    <span class="icon">⚠️</span> Report a Problem
+</a>
+            <a class="sidebar-link" href="{% url 'logout' %}" style="margin-top:auto; color:#ef4444;">
+                <span class="icon">🚪</span> Logout
+            </a>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <div class="dash-main">
+            <h1 style="font-size:clamp(1.2rem, 4vw, 1.6rem); font-weight:800; color:var(--navy); margin-bottom:6px;">
+                Welcome back, {{ request.user.first_name }} 👋
+            </h1>
+            <p class="text-muted mb-lg" style="font-size:.9rem;">Manage your sessions and student requests from here.</p>
+
+            <!-- Stats -->
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <p class="stat-label">Total Bookings</p>
+                    <p class="stat-value">{{ total_bookings }}</p>
+                </div>
+                <div class="stat-card gold-accent">
+                    <p class="stat-label">New Requests</p>
+                    <p class="stat-value">{{ pending_bookings }}</p>
+                </div>
+                <div class="stat-card">
+                    <p class="stat-label">Accepted</p>
+                    <p class="stat-value">{{ accepted_bookings }}</p>
+                </div>
+                <div class="stat-card">
+                    <p class="stat-label">Rating</p>
+                    <p class="stat-value">{{ average_rating }}⭐</p>
+                </div>
+            </div>
+
+            <!-- Reviews -->
+            <div class="ct-section">
+                <h2 class="section-heading">What Students Are Saying</h2>
+                {% for review in profile.review_set.all %}
+                <div class="review-card">
+                    <p class="reviewer">{{ review.student.user.first_name }} {{ review.student.user.last_name }} <span class="star-rating">⭐ {{ review.rating }}/5</span></p>
+                    <p class="review-text">{{ review.comment }}</p>
+                </div>
+                {% empty %}
+                <div class="ct-card" style="text-align:center; padding:30px; color:var(--text-muted);">
+                    <p style="font-size:2rem; margin-bottom:8px;">⭐</p>
+                    <p>No reviews yet. They'll appear here once students rate your sessions.</p>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Profile Info -->
+            <div class="ct-section">
+                <h2 class="section-heading">Your Profile</h2>
+                <div class="ct-card">
+                    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:10px; font-size:.92rem;">
+                        <p><strong>Name:</strong> {{ request.user.first_name }} {{ request.user.last_name }}</p>
+                        <p><strong>Email:</strong> {{ request.user.email }}</p>
+                        <p><strong>Qualification:</strong> {{ profile.qualification }}</p>
+                        <p><strong>Experience:</strong> {{ profile.years_of_experience }} years</p>
+                        <p><strong>Hourly Rate:</strong> UGX {{ profile.hourly_rate }}</p>
+                        <p><strong>Availability Slots:</strong> {{ availability_count }}</p>
+                        <p style="grid-column:1 / -1;"><strong>Faculty:</strong>
+                            {% if tutor_faculties %}{{ tutor_faculties|join:", " }}{% else %}Not set yet — add subjects to determine your faculty{% endif %}
+                        </p>
+                        <p style="grid-column:1 / -1;"><strong>Subjects:</strong>
+                            {% for subject in profile.subjects.all %}
+                            <span class="tutor-tag">{{ subject.name }}</span>
+                            {% empty %}
+                            None added yet.
+                            {% endfor %}
+                        </p>
+                        {% if profile.biography %}
+                        <p style="grid-column:1 / -1;"><strong>Bio:</strong> {{ profile.biography }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="action-row" style="margin-top:18px;">
+                        <a href="{% url 'edit_tutor_profile' %}" class="btn btn-primary btn-sm">Edit Profile & Availability</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Incoming Booking Requests -->
+            
+            <div class="ct-section">
+                <h2 class="section-heading">
+                    New Learning Requests
+                    {% if pending_bookings > 0 %}
+                    <span class="badge badge-pending" style="vertical-align:middle;">{{ pending_bookings }} new</span>
+                    {% endif %}
+                </h2>
+
+                {% for booking in pending_requests %}
+                    <div class="proposal-card new" style="margin-bottom:14px;">
+                        <h4>
+                            {{ booking.student.user.first_name }} {{ booking.student.user.last_name }} — {{ booking.subject }}
+                            {% if booking.same_slot_count > 1 %}
+                            <span class="badge badge-pending" style="margin-left:6px;">⚠️ {{ booking.same_slot_count }} students requested this slot</span>
+                            {% endif %}
+                        </h4>
+                        <p style="font-size:.88rem; color:var(--text-muted); margin:6px 0;">
+                            📅 {{ booking.booking_date }} &nbsp;·&nbsp; 🕐 {{ booking.booking_time }}
+                        </p>
+                        {% if booking.learning_goal %}
+                        <p style="font-size:.88rem; color:var(--text-main); margin:6px 0; background:var(--light-grey); padding:8px 12px; border-radius:8px;">
+                            💬 <strong>Wants help with:</strong> {{ booking.learning_goal }}
+                        </p>
+                        {% endif %}
+                        <div class="proposal-actions" style="margin-top:10px;">
+                            <a href="{% url 'accept_booking' booking.id %}" class="btn btn-primary btn-sm" data-confirm="Accept session request from {{ booking.student.user.first_name }}?">Accept</a>
+                            <a href="{% url 'reject_booking' booking.id %}" class="btn btn-danger btn-sm">Decline</a>
+                        </div>
+                    </div>
+                {% empty %}
+                <div class="ct-card" style="text-align:center; padding:30px; color:var(--text-muted);">
+                    <p>No booking requests yet.</p>
+                </div>
+                {% endfor %}
+            </div>
+                
+
+            <!-- All Bookings Table -->
+            <div class="ct-section">
+                <h2 class="section-heading">All Bookings</h2>
+                <div class="ct-table-wrap">
+                  <table class="ct-table">
+    <thead>
+        <tr>
+            <th>Student</th>
+            <th>Subject</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for booking in bookings %}
+        <tr>
+            <td>{{ booking.student.user.first_name }} {{ booking.student.user.last_name }}</td>
+            <td>
+                {{ booking.subject }}
+                {% if booking.learning_goal %}
+                <br><span style="font-size:.78rem; color:var(--text-muted);">💬 {{ booking.learning_goal }}</span>
+                {% endif %}
+            </td>
+            <td>{{ booking.booking_date }}</td>
+            <td>{{ booking.booking_time }}</td>
+            <td>
+    <span class="badge badge-{% if booking.status == 'Pending' %}pending{% elif booking.status == 'Accepted' %}accepted{% elif booking.status == 'Cancelled' %}declined{% else %}declined{% endif %}">
+        {{ booking.status }}
+    </span>
+    {% if booking.status == 'Accepted' and booking.is_paid %}
+    <span class="badge badge-accepted" style="margin-top:4px; display:block;">Paid</span>
+    {% elif booking.status == 'Accepted' and not booking.is_paid %}
+    <span class="badge badge-pending" style="margin-top:4px; display:block;">Unpaid</span>
+    {% endif %}
+</td>
+    
+<td>
+               {% if booking.status == 'Accepted' %}
+<div style="display:flex; flex-wrap:wrap; gap:8px;">
+    <a href="{% url 'booking_chat' booking.id %}" class="btn btn-outline btn-sm">
+        💬 Chat{% if booking.unread_count > 0 %} <span class="badge badge-pending" style="margin-left:4px;">{{ booking.unread_count }}</span>{% endif %}
+    </a>
+    <a href="{% url 'cancel_booking_tutor' booking.id %}" class="btn btn-danger btn-sm"
+       data-confirm="Cancel this session with {{ booking.student.user.first_name }}?">Cancel</a>
+</div>
+    {% elif booking.status == 'Cancelled' or booking.status == 'Declined' %}
+    <a href="{% url 'delete_booking' booking.id %}" class="btn btn-outline btn-sm"
+       data-confirm="Remove this booking from your list?">Remove</a>
+    {% else %}
+    —
+    {% endif %}
+</td>
+
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6" style="text-align:center; color:var(--text-muted); padding:20px;">
+                No bookings yet.
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>  
+                </div>
+
+                <!-- Pagination -->
+                {% if bookings.has_other_pages %}
+                <div style="display:flex; justify-content:center; gap:8px; margin-top:20px; flex-wrap:wrap;">
+                    {% if bookings.has_previous %}
+                    <a href="?page={{ bookings.previous_page_number }}" class="btn btn-outline btn-sm">← Previous</a>
+                    {% endif %}
+                    {% for num in bookings.paginator.page_range %}
+                        {% if bookings.number == num %}
+                        <span class="btn btn-primary btn-sm">{{ num }}</span>
+                        {% else %}
+                        <a href="?page={{ num }}" class="btn btn-outline btn-sm">{{ num }}</a>
+                        {% endif %}
+                    {% endfor %}
+                    {% if bookings.has_next %}
+                    <a href="?page={{ bookings.next_page_number }}" class="btn btn-outline btn-sm">Next →</a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

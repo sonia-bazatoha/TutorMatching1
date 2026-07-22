@@ -1,0 +1,106 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Florelle Mbenza">
+    <meta name="description"
+          content="Tutor Matching is a campus-based platform that connects students with qualified senior students for tutoring, mentorship, and academic support.">
+
+    <title>Tutor Matching</title>
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=1">
+    <link rel="stylesheet" href="{% static 'css/app.css' %}?v=2">
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body>
+
+    <header class="header {% if not request.resolver_match.url_name == 'home' %}header-inner{% endif %}">
+       
+        <nav class="navbar">
+
+    <a class="logo" href="{% url 'home' %}" style="display:flex; align-items:center; gap:10px;">
+    <img src="{% static 'img/logo.jpeg' %}" alt="Cavendish University Uganda" style="height:38px; width:auto;">
+    <span><span class="campus">Campus</span>Tutor🎓</span>
+</a>
+
+    {% if request.resolver_match.url_name == 'student_dashboard' or request.resolver_match.url_name == 'tutor_dashboard' %}
+        <div class="nav-links" id="nav-links">
+            <a class="nav-link" href="{% url 'home' %}">Home</a>
+            <a class="nav-link" href="{% url 'about' %}">About Us</a>
+        </div>
+      {% elif user.is_authenticated and request.resolver_match.url_name != 'home' and request.resolver_match.url_name != 'login' and request.resolver_match.url_name != 'tutor_register' and request.resolver_match.url_name != 'student_register' and request.resolver_match.url_name != 'about' and request.resolver_match.url_name != 'contact' %}
+            <div class="nav-links" id="nav-links">
+            <a class="nav-link" href="{% url 'home' %}">Home</a>
+            <a class="nav-link" href="{% url 'about' %}">About Us</a>
+            {% if user.role == 'tutor' %}
+                <a class="nav-link" href="{% url 'tutor_dashboard' %}">Dashboard</a>
+            {% elif user.role == 'student' %}
+                <a class="nav-link" href="{% url 'student_dashboard' %}">Dashboard</a>
+            {% endif %}
+        </div>
+
+    {% else %}
+        <div class="nav-links" id="nav-links">
+            <a class="nav-link" href="{% url 'home' %}">Home</a>
+            <a class="nav-link" href="{% url 'student_register' %}">Register as a Student</a>
+            <a class="nav-link" href="{% url 'tutor_register' %}">Register a Tutor</a>
+            <a class="nav-link" href="{% url 'about' %}">About Us</a>
+            <a class="nav-link" href="{% url 'contact' %}">Contact</a>
+            <a class="nav-link" href="{% url 'login' %}">Login</a>
+        </div>
+    {% endif %}
+
+    <!-- Hamburger button -->
+    <button class="hamburger" id="hamburger" aria-label="Toggle navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+
+</nav>
+        {% block hero %}
+        {% endblock %}
+    </header>
+
+    {% block content %}
+    {% endblock %}
+
+    <!-- Toast container -->
+    <div id="toast-container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="toast toast-{{ message.tags }}" data-message="{{ message }}"></div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <footer class="footer">
+        <ul class="footer-links">
+            <li><a href="{% url 'about' %}">About Us</a></li>
+            <li><a href="{% url 'contact' %}">Contact</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+        </ul>
+
+        <p>
+            &copy; 2026 CampusTutor.
+            <br>
+            All rights reserved.
+        </p>
+    </footer>
+
+    <script src="{% static 'js/toast.js' %}"></script>
+    <script src="{% static 'js/hamburger.js' %}"></script>
+    <script src="{% static 'js/password.js' %}"></script>
+    <script src="{% static 'js/confirm.js' %}"></script>
+    <script src="{% static 'js/loading.js' %}"></script>
+    <script src="{% static 'js/tutor-search.js' %}"></script>
+    <script src="{% static 'js/subject-filter.js' %}"></script>
+    <script src="{% static 'js/avatar-lightbox.js' %}"></script>
+    <script src="{% static 'js/booking-chat.js' %}"></script>
+
+</body>
+</html>

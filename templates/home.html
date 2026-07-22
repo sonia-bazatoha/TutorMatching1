@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block hero %}
+<div class="home-hero">
+
+    <!-- Left: Text -->
+    <div class="home-hero-text">
+        <h1 class="hero-title" style="color: white; margin-top: 0; font-size: clamp(1.8rem, 3.5vw, 3.2rem); width: auto;">
+            Learn from Your <strong class="hero-title-strong">Senior,</strong>
+            Grow Together
+        </h1>
+        <p class="hero-text" style="color: rgba(255,255,255,0.88); margin-top: 20px; font-size: clamp(1rem, 1.5vw, 1.3rem); width: auto; max-width: 100%;">
+            CampusTutor connects you with experienced senior students who can
+            help you master any subject. Affordable, accessible, and effective
+            peer-to-peer learning.
+        </p>
+        <div class="cta-buttonss" style="margin-top: 32px;">
+            <a href="{% url 'student_register' %}" class="btn-primaryy">Register as a Student</a>
+            <a href="{% url 'tutor_register' %}" class="btn-seconderyy">Register as a Tutor</a>
+        </div>
+    </div>
+
+    <!-- Right: Image -->
+    <div class="home-hero-image">
+        <img src="{% static 'img/4.jpeg' %}" alt="Students learning together"
+             class="hero-photo"
+             style="width: 100%; height: auto; border-radius: 20px;
+                    box-shadow: 0 20px 48px rgba(0,0,0,0.4); display: block;
+                    transition: transform 0.3s ease, box-shadow 0.3s ease;">
+    </div>
+
+</div>
+{% endblock %}
+
+{% block content %}
+<main class="main">
+    <main class="main">
+
+    <a href="#popular-subjects" class="jump-fab">📚 Popular Subjects</a>
+
+    <!-- Why Choose Us -->
+    <div class="sections-row">
+        <section class="why-card">
+            <h2>Why Choose <strong class="campustutor">CampusTutor</strong>?💁‍♀️</h2>
+            <p>
+                Our senior tutors have already mastered the courses you're taking
+                and understand the challenges students face. <br />
+                They provide practical insights, proven study strategies, and
+                personalized guidance to help you succeed academically. <br />
+                Whether you need help preparing for exams, understanding difficult
+                concepts, or improving your study habits, Campus Tutor connects you
+                with experienced peers who are ready to support your learning journey.
+            </p>
+        </section>
+
+        <!-- How It Works -->
+        <section class="how-card">
+            <h2>Start Your Learning journey! <span>📚</span></h2>
+            <ol class="steps">
+                <li>Search for a tutor <span>⬇️</span></li>
+                <li>View tutor profiles and subjects <span>⬇️</span></li>
+                <li>Book a session and start learning <span>🤩</span></li>
+            </ol>
+        </section>
+    </div>
+
+    <!-- Benefits for Students -->
+    <section class="section">
+        <h2 class="section-title">Benefits for Students🧑‍💼</h2>
+        <div class="card-container">
+            <div class="card">
+                <h3>🎓 Qualified Senior Tutors</h3>
+                <p>Learn from students who have successfully completed your courses.</p>
+            </div>
+            <div class="card">
+                <h3>💰 Affordable Learning</h3>
+                <p>Get academic support at student-friendly rates.</p>
+            </div>
+            <div class="card">
+                <h3>📍 Campus-Based</h3>
+                <p>Connect with tutors from your own university who understand your curriculum.</p>
+            </div>
+            <div class="card">
+                <h3>🤝 Personalized Support</h3>
+                <p>Receive one-on-one guidance tailored to your needs.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits for Tutors -->
+    <section class="section">
+        <h2 class="section-title">Benefits for Tutors👨‍🏫</h2>
+        <div class="card-container">
+            <div class="card">
+                <h3>📚 Strengthen Your Knowledge</h3>
+                <p>Explaining what you know helps you understand subjects better and improve your mastery.</p>
+            </div>
+            <div class="card">
+                <h3>💬 Improve Communication Skills</h3>
+                <p>Teaching others helps you become better at explaining complex ideas clearly.</p>
+            </div>
+            <div class="card">
+                <h3>💰 Earn While You Study</h3>
+                <p>Get a small income by helping other students succeed academically.</p>
+            </div>
+            <div class="card">
+                <h3>💼 Build Experience</h3>
+                <p>Gain teaching and mentoring experience that strengthens your CV and future career.</p>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Campus Life -->
+    <section class="section">
+        <h2 class="section-title">Real Support From your peers</h2>
+        <div class="campus-photos">
+            <figure>
+                <img src="{% static 'img/1.jpeg' %}" alt="Students learning together">
+                <figcaption>Peer-to-peer learning that actually works</figcaption>
+            </figure>
+            <figure>
+                <img src="{% static 'img/2.jpeg' %}" alt="Student on campus">
+                <figcaption>Support from students who've been where you are</figcaption>
+            </figure>
+            <figure>
+                <img src="{% static 'img/3.jpeg' %}" alt="Campus life">
+                <figcaption>Join a growing community of learners</figcaption>
+            </figure>
+        </div>
+    </section>
+
+
+    <!-- Popular Subjects -->
+    <!-- Popular Subjects -->
+    <section class="section-title" id="popular-subjects">
+        <h2 class="section-popular-subject">Popular Subjects</h2>
+        <div class="tags">
+            <span>👨‍💻 Programming</span>
+            <span>🧮 Mathematics</span>
+            <span>📊 Statistics</span>
+            <span>💾 Database Systems</span>
+            <span>🖥️ Web Development</span>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="section-center-cta">
+        <h2>Ready to Improve Your Grades?💪</h2>
+        <p>🌟 Join Campus Tutor today and connect with experienced senior students who can help you succeed.🎉</p>
+        <div class="cta-buttons">
+            <a href="{% url 'student_register' %}" class="btn-primary">Register as a Student</a>
+            <a href="{% url 'tutor_register' %}" class="btn-secondery">Register as a Tutor</a>
+        </div>
+    </section>
+
+</main>
+{% endblock %}

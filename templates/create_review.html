@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-wrapper">
+    <div class="page-hero">
+        <h1>Leave a <span class="hero-accent">Review</span></h1>
+        <p>Share your experience to help other students choose the right tutor.</p>
+    </div>
+
+    <main class="main-content" style="display:flex; justify-content:center; padding-top:48px; padding-bottom:64px;">
+
+        <div class="form-card" style="max-width:560px;">
+            <h2 class="section-heading">Reviewing {{ tutor.user.first_name }} {{ tutor.user.last_name }}</h2>
+            <p class="text-muted mb-md" style="font-size:.92rem;">{{ tutor.qualification }}</p>
+
+            
+            <form method="POST">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label class="form-label" for="id_rating">Rating (1–5)</label>
+                    <select class="form-control" id="id_rating" name="rating" required>
+                        <option value="">Select a rating</option>
+                        <option value="5">⭐⭐⭐⭐⭐ — Excellent</option>
+                        <option value="4">⭐⭐⭐⭐ — Good</option>
+                        <option value="3">⭐⭐⭐ — Average</option>
+                        <option value="2">⭐⭐ — Below Average</option>
+                        <option value="1">⭐ — Poor</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="id_comment">Your Review</label>
+                    <textarea class="form-control" id="id_comment" name="comment"
+                        placeholder="Describe your experience with this tutor…"
+                        style="min-height:140px;" required></textarea>
+                </div>
+
+                <button class="btn btn-primary w-full" type="submit">Submit Review</button>
+            </form>
+        </div>
+
+    </main>
+</div>
+{% endblock %}

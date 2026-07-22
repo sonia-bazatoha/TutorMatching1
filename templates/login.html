@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="auth-page" style="padding-top: 120px;">
+    <div class="auth-card">
+
+        <div class="brand">
+            <div class="brand-name"><span>Campus</span>Tutor🎓</div>
+        </div>
+
+        <h2>Welcome back</h2>
+        <p class="sub">Sign in to your account to continue learning.</p>
+
+        {% if form.errors %}
+            <p style="color:red; font-size:.9rem;">Invalid username or password. Please try again.</p>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label class="form-label" for="id_username">Username</label>
+                <input class="form-control" type="text" name="username" id="id_username"
+                    placeholder="Enter your username" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="id_password">Password</label>
+                <input class="form-control" type="password" name="password" id="id_password"
+                    placeholder="Enter your password" required>
+            </div>
+
+            <button class="btn btn-primary w-full mt-sm" type="submit">Sign In</button>
+        </form>
+
+        <p class="auth-footer-link">
+            Don't have an account? <a href="{% url 'student_register' %}">Register as Student</a>
+        </p>
+        <p class="auth-footer-link" style="margin-top:8px;">
+            Want to tutor? <a href="{% url 'tutor_register' %}">Join as Tutor</a>
+        </p>
+        <p class="auth-footer-link" style="margin-top:16px; font-size:.8rem;">
+            Admin? <a href="/admin/">Admin login →</a>
+        </p>
+
+    </div>
+</div>
+{% endblock %}

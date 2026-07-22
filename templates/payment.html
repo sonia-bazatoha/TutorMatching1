@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-wrapper">
+    <div class="page-hero">
+        <h1>Complete Your <span class="hero-accent">Payment</span></h1>
+        <p>Confirm your payment to secure your tutoring session.</p>
+    </div>
+
+    <main class="main-content" style="display:flex; justify-content:center; padding-top:48px; padding-bottom:64px;">
+        <div class="form-card" style="max-width:520px; width:100%;">
+
+            <!-- Session Summary -->
+            <div style="background:var(--light-grey); border-radius:var(--radius-md); padding:20px; margin-bottom:28px;">
+                <h3 style="color:var(--navy); font-size:1rem; font-weight:700; margin-bottom:12px;">Session Summary</h3>
+                <div style="display:flex; flex-direction:column; gap:6px; font-size:.92rem;">
+                    <p><strong>Tutor:</strong> {{ booking.tutor.user.first_name }} {{ booking.tutor.user.last_name }}</p>
+                    <p><strong>Subject:</strong> {{ booking.subject.name }}</p>
+                    <p><strong>Date:</strong> {{ booking.booking_date }}</p>
+                    <p><strong>Time:</strong> {{ booking.booking_time }}</p>
+                    {% if booking.learning_goal %}
+                    <p><strong>Learning Goal:</strong> {{ booking.learning_goal }}</p>
+                    {% endif %}
+                    <p><strong>Rate:</strong> UGX {{ booking.tutor.hourly_rate }} / hour</p>
+                </div>
+            </div>
+
+            <h2 class="section-heading">Payment Details</h2>
+
+            <form method="POST">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label class="form-label" for="id_method">Payment Method</label>
+                    {{ form.method }}
+                </div>
+
+                 <div class="form-group">
+    <label class="form-label" for="id_currency">Currency</label>
+    {{ form.currency }}
+</div>
+
+                <div class="form-group">
+                    <label class="form-label" for="id_amount">Amount (UGX)</label>
+                    {{ form.amount }}
+                </div>
+
+                <div style="background:#dcfce7; border-radius:var(--radius-sm); padding:14px 16px; margin-bottom:20px; font-size:.88rem; color:#166534;">
+                    ⚠️ By submitting this form you confirm that you have made or will make this payment to your tutor using the selected method.
+                </div>
+
+                <button class="btn btn-primary w-full" type="submit">Confirm Payment</button>
+            </form>
+
+            <div class="action-row" style="margin-top:16px;">
+                <a href="{% url 'student_dashboard' %}" class="btn btn-outline btn-sm">← Back to Dashboard</a>
+            </div>
+
+        </div>
+    </main>
+</div>
+{% endblock %}

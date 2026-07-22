@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-wrapper">
+    <main class="main-content">
+
+        <!-- Profile header -->
+        <div class="profile-header">
+            <div class="profile-avatar">
+                {% if tutor.user.profile_picture %}
+                <img src="{{ tutor.user.profile_picture.url }}" alt="{{ tutor.user.first_name }}" class="clickable-avatar"
+                     style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+                {% else %}
+                👤
+                {% endif %}
+            </div>
+            <div class="profile-info">
+                <span class="role-badge">Tutor</span>
+                <h2>{{ tutor.user.first_name }} {{ tutor.user.last_name }}</h2>
+                <p class="meta">
+                    🎓 {{ tutor.qualification }}<br />
+                    💼 {{ tutor.years_of_experience }} years experience<br />
+                    💰 UGX {{ tutor.hourly_rate }} / hour
+                </p>
+                <div style="margin-top:10px;">
+                    {% if reviews %}
+                        <span class="star-rating" style="font-size:1.1rem;">
+                            ⭐ {{ reviews.count }} review{{ reviews.count|pluralize }}
+                        </span>
+                    {% else %}
+                        <span class="text-muted" style="font-size:.9rem;">No reviews yet</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="about-row">
+            <!-- Left column -->
+            <div>
+                <div class="ct-section">
+                    <h2 class="section-heading">About Me</h2>
+                    <div class="ct-card" style="border-top:none; border-left: 4px solid var(--gold);">
+                        <p style="line-height:1.8; color:var(--text-main);">
+                            {{ tutor.biography|default:"This tutor hasn't added a biography yet." }}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="ct-section">
+                    <h2 class="section-heading">Subjects I Teach</h2>
+                    <div class="tutor-tags" style="gap:10px;">
+                        {% for subject in tutor.subjects.all %}
+                            <span class="tutor-tag" style="font-size:.9rem; padding:6px 14px;">{{ subject.name }}</span>
+                        {% empty %}
+                            <span class="text-muted" style="font-size:.9rem;">No subjects listed yet</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="ct-section">
+                    <h2 class="section-heading">Availability</h2>
+                    <div class="ct-card">
+                        {% for availability in availabilities %}
+                            <p><strong>{{ availability.day }}:</strong> {{ availability.start_time }} – {{ availability.end_time }}</p>
+                        {% empty %}
+                            <p class="text-muted">No availability added yet.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right column -->
+            <div>
+                <div class="ct-section">
+                    <h2 class="section-heading">Student Reviews</h2>
+
+                    {% for review in reviews %}
+                    <div class="review-card">
+                        <div style="display:flex; align-items:center; gap:10px; margin-bottom:6px;">
+                            <div class="tutor-avatar" style="width:36px; height:36px; font-size:.9rem; flex-shrink:0;">
+                                {% if review.student.user.profile_picture %}
+                                <img src="{{ review.student.user.profile_picture.url }}" class="clickable-avatar"
+                                     style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+                                {% else %}
+                                🧑‍🎓
+                                {% endif %}
+                            </div>
+                            <p class="reviewer">{{ review.student.user.first_name }} {{ review.student.user.last_name }} <span class="star-rating">⭐ {{ review.rating }}/5</span></p>
+                        </div>
+                        <p class="review-text">{{ review.comment }}</p>
+                    </div>
+                    {% empty %}
+                    <div class="ct-card" style="text-align:center; color:var(--text-muted);">
+                        <p>No reviews yet. Be the first to book and review!</p>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="ct-section">
+                    <div class="ct-card" style="text-align:center; background: var(--navy); border-top:none;">
+                        <h3 style="color:var(--gold); font-size:1.3rem; margin-bottom:10px;">Ready to start learning?</h3>
+                        <p style="color:rgba(255,255,255,.8); font-size:.92rem; margin-bottom:20px;">
+                            Book a session with {{ tutor.user.first_name }} and take control of your academic journey.
+                        </p>
+                        {% if subject_id %}
+                        <a href="{% url 'create_booking' tutor.id %}?subject={{ subject_id }}" class="btn btn-primary btn-lg">Book a Session</a>
+                        {% else %}
+                        <a href="{% url 'create_booking' tutor.id %}" class="btn btn-primary btn-lg">Book a Session</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</div>
+{% endblock %}

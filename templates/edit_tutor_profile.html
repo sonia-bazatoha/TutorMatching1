@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="page-wrapper">
+
+    <div class="page-hero">
+        <h1>Edit Your <span class="hero-accent">Profile</span></h1>
+        <p>Keep your information up to date so students always see the most accurate profile.</p>
+    </div>
+
+    <main class="main-content" style="display:flex; flex-direction:column; align-items:center; padding-top:48px; padding-bottom:64px; gap:32px;">
+
+        {% if messages %}
+            {% for message in messages %}
+                <p style="color:green; font-size:.9rem; text-align:center;">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Profile Form -->
+        <div class="form-card" style="max-width:640px; width:100%;">
+            <h2 class="section-heading">Profile Information</h2>
+
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="save_profile" value="1">
+
+                <!-- Profile Picture -->
+                <div class="form-group">
+                    <label class="form-label">Profile Picture</label>
+                    <div style="display:flex; align-items:center; gap:16px; margin-bottom:10px;">
+                        <div>
+                            {% if request.user.profile_picture %}
+                            <img src="{{ request.user.profile_picture.url }}"
+                                 style="width:80px; height:80px; border-radius:50%; object-fit:cover; border:3px solid var(--gold);">
+                            {% else %}
+                            <div style="width:80px; height:80px; border-radius:50%; background:var(--light-grey);
+                                        border:3px solid var(--gold); display:flex; align-items:center;
+                                        justify-content:center; font-size:2rem;">👨‍🏫</div>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <input class="form-control" type="file" name="profile_picture"
+                                   id="id_profile_picture" accept="image/*" style="padding:6px;">
+                            <p style="font-size:.8rem; color:var(--text-muted); margin-top:4px;">JPG, PNG. Max 2MB.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="id_qualification">Qualification</label>
+                    <input class="form-control" type="text" name="qualification" id="id_qualification"
+                        value="{{ form.qualification.value|default:'' }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="id_years_of_experience">Years of Experience</label>
+                    <input class="form-control" type="number" name="years_of_experience" id="id_years_of_experience"
+                        value="{{ form.years_of_experience.value|default:'' }}" min="0" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="id_hourly_rate">Hourly Rate (UGX)</label>
+                    <input class="form-control" type="number" name="hourly_rate" id="id_hourly_rate"
+                        value="{{ form.hourly_rate.value|default:'' }}" min="0" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="id_biography">About You</label>
+                    <textarea class="form-control" name="biography" id="id_biography"
+                        rows="4">{{ form.biography.value|default:'' }}</textarea>
+                </div>
+
+                <div class="action-row">
+                    <button class="btn btn-primary" type="submit">Save Profile</button>
+                    <a class="btn btn-outline" href="{% url 'tutor_dashboard' %}">Cancel</a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Subject Selector -->
+        <div class="form-card" style="max-width:640px; width:100%;">
+            <h2 class="section-heading">Teaching Subjects</h2>
+            <p style="font-size:.85rem; color:var(--text-muted); margin-bottom:8px;">
+    Filter by programme, year and semester — then tick the subjects you teach.
+    You can repeat for multiple combinations and your selections will be added together.
+</p>
+<p style="font-size:.88rem; font-weight:700; margin-bottom:16px;
+    color:{% if subject_count >= 10 %}#dc2626{% elif subject_count >= 7 %}#d97706{% else %}#166534{% endif %};">
+    📚 {{ subject_count }}/10 subject slots used
+    {% if subject_count >= 10 %}
+     — limit reached, remove subjects to add new ones
+    {% else %}
+     — {{ slots_remaining }} slot(s) remaining
+    {% endif %}
+</p>
+
+<!-- Currently saved subjects with delete button -->
+            {% if tutor.subjects.all %}
+            <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px;">
+                {% for subject in tutor.subjects.all %}
+                <span style="display:flex; align-items:center; gap:6px; background:#dcfce7; color:#166534; padding:4px 12px; border-radius:20px; font-size:.82rem;">
+                    ✓ {{ subject.name }}
+                    <a href="{% url 'remove_subject' subject.id %}"
+                       onclick="return confirm('Remove {{ subject.name }} from your subjects?')"
+                       style="color:#dc2626; font-weight:bold; text-decoration:none; margin-left:4px; font-size:.9rem;"
+                       title="Remove">✕</a>
+                </span>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p style="font-size:.85rem; color:var(--text-muted); margin-bottom:16px;">No subjects added yet.</p>
+            {% endif %}
+
+            <!-- Filter dropdowns -->
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:16px;">
+
+                <div>
+                    <label class="form-label" style="font-size:.82rem;">Programme</label>
+                    <select class="form-control" id="filter-programme" style="font-size:.88rem;">
+                        <option value="">Select programme</option>
+                        {% for prog in programmes %}
+                        <option value="{{ prog.id }}">{{ prog.code }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <label class="form-label" style="font-size:.82rem;">Year</label>
+                    <select class="form-control" id="filter-year" style="font-size:.88rem;">
+                        <option value="">Select year</option>
+                        {% for year in years %}
+                        <option value="{{ year.number }}">Year {{ year.number }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <label class="form-label" style="font-size:.82rem;">Semester</label>
+                    <select class="form-control" id="filter-semester" style="font-size:.88rem;">
+                        <option value="">Select semester</option>
+                        {% for sem in semesters %}
+                        <option value="{{ sem.number }}">Semester {{ sem.number }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+            </div>
+
+            <!-- Dynamic checkboxes area -->
+            <p id="subject-loading" style="display:none; font-size:.85rem; color:var(--text-muted);">
+                Loading subjects...
+            </p>
+            <div id="subject-checkboxes" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px;"></div>
+
+            <!-- Saved subject IDs for JS -->
+            <script id="saved-subject-ids" type="application/json">
+                {{ saved_subject_ids_json }}
+            </script>
+
+            <!-- Subject save form -->
+            <form id="subject-form" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="save_subjects" value="1">
+            </form>
+
+            <button id="add-subjects-btn" type="submit" form="subject-form"
+                    class="btn btn-primary btn-sm" style="display:none; margin-top:8px;">
+                Add Selected Subjects
+            </button>
+
+        </div>
+
+        <!-- Availability -->
+        <div class="form-card" style="max-width:640px; width:100%;">
+            <h2 class="section-heading">Manage Availability</h2>
+
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="add_availability" value="1">
+                {{ availability_form.as_p }}
+                <button class="btn btn-primary" type="submit">Add Availability</button>
+            </form>
+
+            <div class="ct-table-wrap" style="margin-top:24px;">
+                <table class="ct-table">
+                    <thead>
+                       <tr>
+                            <th>Day</th>
+                            <th>Start Time</th>
+                            <th>End Time</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for availability in availabilities %}
+                        <tr>
+                            <td>{{ availability.day }}</td>
+                            <td>{{ availability.start_time }}</td>
+                            <td>{{ availability.end_time }}</td>
+                            <td>
+                                <a href="{% url 'delete_availability' availability.id %}" class="btn btn-danger btn-sm"
+                                   data-confirm="Delete this availability slot?">Delete</a>
+                            </td> 
+                        </tr> 
+
+                        <tr>
+                            <td colspan="3" style="text-align:center; color:var(--text-muted);">
+                                No availability added yet.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<script src="{% static 'js/subject-filter.js' %}"></script>
+{% endblock %}

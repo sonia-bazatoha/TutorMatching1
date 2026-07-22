@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-wrapper">
+
+    <div class="page-hero">
+        <h1>Manage <span class="hero-accent">Availability</span></h1>
+        <p>Set the days and times you are available to tutor students.</p>
+    </div>
+
+    <main class="main-content" style="display:flex; flex-direction:column; align-items:center; padding-top:48px; padding-bottom:64px; gap:32px;">
+
+        <!-- Add Availability Form -->
+        <div class="form-card" style="max-width:560px; width:100%;">
+            <h2 class="section-heading">Add Availability Slot</h2>
+            <form method="POST">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary w-full" style="margin-top:12px;">
+                    Save Availability
+                </button>
+            </form>
+        </div>
+
+        <!-- Current Availability -->
+        <div class="form-card" style="max-width:560px; width:100%;">
+            <h2 class="section-heading">Your Availability</h2>
+            <div class="ct-table-wrap">
+                <table class="ct-table">
+                    <thead>
+                        <tr>
+                            <th>Day</th>
+                            <th>Start Time</th>
+                            <th>End Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for availability in availabilities %}
+                        <tr>
+                            <td>{{ availability.day }}</td>
+                            <td>{{ availability.start_time }}</td>
+                            <td>{{ availability.end_time }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3" style="text-align:center; color:var(--text-muted); padding:20px;">
+                                No availability added yet.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="action-row" style="margin-top:16px;">
+                <a href="{% url 'tutor_dashboard' %}" class="btn btn-outline btn-sm">← Back to Dashboard</a>
+            </div>
+        </div>
+
+    </main>
+</div>
+{% endblock %}

@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-wrapper">
+    <div class="page-hero">
+        <h1>Decline <span class="hero-accent">Booking Request</span></h1>
+        <p>Let the student know why, and choose whether to suggest a better time.</p>
+    </div>
+
+    <main class="main-content" style="display:flex; justify-content:center; padding-top:48px; padding-bottom:64px;">
+        <div class="form-card" style="max-width:560px;">
+
+            <h2 class="section-heading">Booking Details</h2>
+            <div style="background:var(--light-grey); padding:16px; border-radius:var(--radius-md); margin-bottom:24px; font-size:.92rem;">
+                <p><strong>Student:</strong> {{ booking.student.user.first_name }} {{ booking.student.user.last_name }}</p>
+                <p style="margin-top:6px;"><strong>Subject:</strong> {{ booking.subject.name }}</p>
+                <p style="margin-top:6px;"><strong>Requested Date:</strong> {{ booking.booking_date }}</p>
+                <p style="margin-top:6px;"><strong>Requested Time:</strong> {{ booking.booking_time }}</p>
+                {% if booking.learning_goal %}
+                <p style="margin-top:6px;"><strong>Learning Goal:</strong> {{ booking.learning_goal }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Mode selector -->
+            <div class="form-group">
+                <label class="form-label">How would you like to decline?</label>
+                <div style="display:flex; gap:10px; margin-top:8px;">
+                    <button type="button" id="mode-btn-noalt" class="btn btn-primary btn-sm" onclick="setMode('noalt')" style="flex:1;">
+                        Decline — No Alternative
+                    </button>
+                    <button type="button" id="mode-btn-propose" class="btn btn-outline btn-sm" onclick="setMode('propose')" style="flex:1;">
+                        Decline & Suggest New Time
+                    </button>
+                </div>
+            </div>
+
+            <form method="POST" id="decline-form">
+                {% csrf_token %}
+                <input type="hidden" name="decline_mode" id="id_decline_mode" value="noalt">
+
+                <div class="form-group">
+                    <label class="form-label" for="id_cancellation_reason">
+                        Reason for Declining <span style="color:red;">*</span>
+                    </label>
+                    <textarea class="form-control" id="id_cancellation_reason"
+                        name="cancellation_reason" rows="4" required
+                        placeholder="e.g. I already have a session at this time, I am not available on this day..."></textarea>
+                </div>
+
+                <div id="propose-section" style="display:none;">
+                    <h3 style="font-size:1rem; font-weight:700; color:var(--navy); margin-bottom:16px;">
+                        Suggest a New Time
+                    </h3>
+
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                        <div class="form-group">
+                            <label class="form-label" for="id_proposed_date">Proposed Date</label>
+                            <input class="form-control" type="date" id="id_proposed_date" name="proposed_date">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="id_proposed_time">Proposed Time</label>
+                            <input class="form-control" type="time" id="id_proposed_time" name="proposed_time">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-row">
+                    <button class="btn btn-danger" type="submit">Confirm Decline</button>
+                    <a class="btn btn-outline" href="{% url 'tutor_dashboard' %}">Cancel</a>
+                </div>
+            </form>
+
+        </div>
+    </main>
+</div>
+
+<script>
+function setMode(mode) {
+    const modeInput = document.getElementById('id_decline_mode');
+    const proposeSection = document.getElementById('propose-section');
+    const noaltBtn = document.getElementById('mode-btn-noalt');
+    const proposeBtn = document.getElementById('mode-btn-propose');
+    const dateField = document.getElementById('id_proposed_date');
+    const timeField = document.getElementById('id_proposed_time');
+
+    modeInput.value = mode;
+
+    if (mode === 'propose') {
+        proposeSection.style.display = 'block';
+        proposeBtn.classList.remove('btn-outline');
+        proposeBtn.classList.add('btn-primary');
+        noaltBtn.classList.remove('btn-primary');
+        noaltBtn.classList.add('btn-outline');
+        dateField.setAttribute('required', 'required');
+        timeField.setAttribute('required', 'required');
+    } else {
+        proposeSection.style.display = 'none';
+        noaltBtn.classList.remove('btn-outline');
+        noaltBtn.classList.add('btn-primary');
+        proposeBtn.classList.remove('btn-primary');
+        proposeBtn.classList.add('btn-outline');
+        dateField.removeAttribute('required');
+        timeField.removeAttribute('required');
+        dateField.value = '';
+        timeField.value = '';
+    }
+}
+</script>
+
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-wrapper">
+    <div class="page-hero">
+        <h1><span class="hero-accent">500</span> — Server Error</h1>
+        <p>Something went wrong on our end. Please try again shortly.</p>
+    </div>
+
+    <main class="main-content" style="text-align:center; padding-top:60px; padding-bottom:80px;">
+        <p style="font-size:5rem; margin-bottom:16px;">⚙️</p>
+        <h2 style="color:var(--navy); font-size:1.6rem; margin-bottom:12px;">Something went wrong.</h2>
+        <p style="color:var(--text-muted); margin-bottom:32px; font-size:1rem;">
+            Our team has been notified. Please go back and try again.
+        </p>
+        <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+            <a href="{% url 'home' %}" class="btn btn-primary">Go Home</a>
+            <a href="javascript:history.back()" class="btn btn-outline">Go Back</a>
+        </div>
+    </main>
+</div>
+{% endblock %}

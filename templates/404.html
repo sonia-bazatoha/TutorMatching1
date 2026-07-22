@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-wrapper">
+    <div class="page-hero">
+        <h1><span class="hero-accent">404</span> — Page Not Found</h1>
+        <p>The page you are looking for does not exist or has been moved.</p>
+    </div>
+
+    <main class="main-content" style="text-align:center; padding-top:60px; padding-bottom:80px;">
+        <p style="font-size:5rem; margin-bottom:16px;">🔍</p>
+        <h2 style="color:var(--navy); font-size:1.6rem; margin-bottom:12px;">Oops! We lost that page.</h2>
+        <p style="color:var(--text-muted); margin-bottom:32px; font-size:1rem;">
+            It may have been deleted, moved, or you may have typed the wrong URL.
+        </p>
+        <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+            <a href="{% url 'home' %}" class="btn btn-primary">Go Home</a>
+            <a href="javascript:history.back()" class="btn btn-outline">Go Back</a>
+        </div>
+    </main>
+</div>
+{% endblock %}

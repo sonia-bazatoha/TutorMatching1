@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-wrapper">
+
+    <div class="page-hero">
+        <h1>Edit Your <span class="hero-accent">Profile</span></h1>
+        <p>Keep your academic information up to date.</p>
+    </div>
+
+    <main class="main-content" style="display:flex; justify-content:center; padding-top:48px; padding-bottom:64px;">
+
+        <div class="form-card" style="max-width:520px; width:100%;">
+            <h2 class="section-heading">Academic Information</h2>
+
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <!-- Profile Picture -->
+                <div class="form-group">
+                    <label class="form-label">Profile Picture</label>
+                    <div style="display:flex; align-items:center; gap:16px; margin-bottom:10px;">
+                        <div>
+                            {% if request.user.profile_picture %}
+                            <img id="profile-preview" src="{{ request.user.profile_picture.url }}"
+                                 style="width:80px; height:80px; border-radius:50%; object-fit:cover; border:3px solid var(--gold);">
+                            {% else %}
+                            <div id="profile-preview-placeholder"
+                                 style="width:80px; height:80px; border-radius:50%; background:var(--light-grey);
+                                        border:3px solid var(--gold); display:flex; align-items:center;
+                                        justify-content:center; font-size:2rem;">🧑‍🎓</div>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <input class="form-control" type="file" name="profile_picture"
+                                   id="id_profile_picture" accept="image/*"
+                                   style="padding:6px;">
+                            <p style="font-size:.8rem; color:var(--text-muted); margin-top:4px;">
+                                JPG, PNG. Max 2MB.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="id_university">University</label>
+                    <input class="form-control" type="text" name="university" id="id_university"
+                        value="{{ form.university.value|default:'' }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="id_programme">Programme</label>
+                    <select class="form-control" name="programme" id="id_programme" required>
+                        <option value="">Select your programme</option>
+                        {% for programme in form.programme.field.queryset %}
+                        <option value="{{ programme.id }}"
+                            {% if form.programme.value == programme.id|stringformat:'s' %}selected{% endif %}>
+                            {{ programme.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="id_year_of_study">Year of Study</label>
+                    <input class="form-control" type="number" name="year_of_study" id="id_year_of_study"
+                        value="{{ form.year_of_study.value|default:'' }}" min="1" max="6" required>
+                </div>
+
+                <div class="action-row">
+                    <button class="btn btn-primary" type="submit">Save Changes</button>
+                    <a class="btn btn-outline" href="{% url 'student_dashboard' %}">Cancel</a>
+                </div>
+            </form>
+        </div>
+
+    </main>
+</div>
+{% endblock %}

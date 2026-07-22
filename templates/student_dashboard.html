@@ -1,0 +1,331 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="padding-top:80px; display:flex; flex-direction:column; min-height:100vh;">
+    <div class="dash-layout" style="flex:1;">
+
+        <!-- SIDEBAR -->
+        <aside class="dash-sidebar">
+            <div style="text-align:center; margin-bottom:24px;">
+                <div class="tutor-avatar" style="width:84px; height:84px; margin:0 auto 10px;">
+                    {% if request.user.profile_picture %}
+                    <img src="{{ request.user.profile_picture.url }}" alt="Profile" class="clickable-avatar"
+                         style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+                    {% else %}
+                    🧑‍🎓
+                    {% endif %}
+                </div>
+                <p style="font-weight:700; font-size:.95rem;">{{ request.user.first_name }} {{ request.user.last_name }}</p>
+                <span class="badge badge-active" style="margin-top:4px;">Learner</span>
+            </div>
+
+            <span class="sidebar-label">Navigation</span>
+            <a class="sidebar-link active" href="{% url 'student_dashboard' %}">
+                <span class="icon">🏠</span> Dashboard
+            </a>
+            <a class="sidebar-link" href="{% url 'student_dashboard' %}">
+                <span class="icon">🔍</span> Find Tutors
+            </a>
+            <a class="sidebar-link" href="{% url 'edit_student_profile' %}">
+                <span class="icon">✏️</span> Edit Profile
+            </a>
+             <a class="sidebar-link" href="{% url 'submit_complaint' %}" style="color:#ef4444;">
+             <span class="icon">⚠️</span> Report a Problem
+           </a>
+            <a class="sidebar-link" href="{% url 'logout' %}" style="margin-top:auto; color:#ef4444;">
+                <span class="icon">🚪</span> Logout
+            </a>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <div class="dash-main">
+            <h1 style="font-size:clamp(1.2rem, 4vw, 1.6rem); font-weight:800; color:var(--navy); margin-bottom:6px;">
+                Welcome back, {{ request.user.first_name }} 👋
+            </h1>
+            <p class="text-muted mb-lg" style="font-size:.9rem;">Here's what's happening with your learning today.</p>
+
+            <!-- Stats -->
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <p class="stat-label">Sessions Booked</p>
+                    <p class="stat-value">{{ bookings.paginator.count }}</p>
+                </div>
+                <div class="stat-card gold-accent">
+                    <p class="stat-label">Pending Requests</p>
+                    <p class="stat-value">{{ pending_count }}</p>
+                </div>
+                <div class="stat-card">
+                    <p class="stat-label">Programme</p>
+                    <p class="stat-value" style="font-size:.75rem;">{{ programme }}</p>
+                </div>
+                <div class="stat-card">
+                    <p class="stat-label">Year of Study</p>
+                    <p class="stat-value">{{ year_of_study }}</p>
+                </div>
+            </div>
+
+            <!-- Profile Info -->
+            <div class="ct-section">
+                <h2 class="section-heading">Your Profile</h2>
+                <div class="ct-card">
+                    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:10px; font-size:.92rem;">
+                        <p><strong>Name:</strong> {{ request.user.first_name }} {{ request.user.last_name }}</p>
+                        <p><strong>Email:</strong> {{ request.user.email }}</p>
+                        <p><strong>University:</strong> {{ profile.university }}</p>
+                        <p><strong>Programme:</strong> {{ programme }}</p>
+                        <p><strong>Year of Study:</strong> {{ year_of_study }}</p>
+                        <p><strong>Faculty:</strong> {{ programme.faculty }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Find a Tutor -->
+            <div class="ct-section">
+                <h2 class="section-heading">Find a Tutor</h2>
+
+                <p style="font-size:.9rem; color:var(--text-muted); margin-bottom:16px;">
+                    Programme: <strong>{{ programme }}</strong> &nbsp;·&nbsp;
+                    Year: <strong>{{ year_of_study }}</strong>
+                </p>
+
+                <!-- Step 1: Semester -->
+                <div class="form-group">
+                    <label class="form-label">Step 1 — Select Your Semester</label>
+                    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px;">
+                        {% for sem in semesters %}
+                        <a href="?semester={{ sem.number }}"
+                           class="btn {% if selected_semester == sem.number|stringformat:'s' %}btn-primary{% else %}btn-outline{% endif %} btn-sm">
+                            Semester {{ sem.number }}
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                {% if selected_semester %}
+
+                    <!-- Step 2: Subject -->
+                    <div class="form-group">
+                        <label class="form-label">Step 2 — Select a Subject</label>
+                        <select class="form-control" id="tutor-subject-filter" style="max-width:420px;">
+                            <option value="">— All subjects in Semester {{ selected_semester }} —</option>
+                            {% for subject in subjects %}
+                            <option value="{{ subject.id }}"
+                                {% if selected_subject == subject.id|stringformat:"s" %}selected{% endif %}>
+                                {{ subject.name }}
+                            </option>
+                            {% empty %}
+                            <option disabled>No subjects found for your programme this semester</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Step 3: Name search -->
+                    <div style="margin-bottom:20px; margin-top:16px;">
+                        <input class="form-control" type="text" id="tutor-search-input"
+                               placeholder="Search tutors by name…" style="max-width:420px;">
+                    </div>
+
+                    <!-- Tutor Results -->
+                    <div id="tutor-results" style="display:flex; flex-direction:column; gap:14px; margin-top:10px;">
+                        {% for tutor in tutors %}
+                        <div class="tutor-card">
+                            <div class="tutor-avatar">
+                                {% if tutor.user.profile_picture %}
+                                <img src="{{ tutor.user.profile_picture.url }}" alt="{{ tutor.user.first_name }}" class="clickable-avatar"
+                                     style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+                                {% else %}
+                                👤
+                                {% endif %}
+                            </div>
+                            <div class="tutor-info">
+                                <h3>{{ tutor.user.first_name }} {{ tutor.user.last_name }}</h3>
+                                <p class="tutor-meta">🎓 {{ tutor.qualification }} &nbsp;·&nbsp; {{ tutor.years_of_experience }} years experience</p>
+                                <p style="font-size:.88rem; color:var(--text-muted);">UGX {{ tutor.hourly_rate }} / hour</p>
+                                <div class="tutor-tags">
+                                    {% for subject in tutor.subjects.all %}
+                                    <span class="tutor-tag">{{ subject.name }}</span>
+                                    {% endfor %}
+                                </div>
+                                <div class="action-row" style="margin-top:10px;">
+                                    {% if selected_subject %}
+                                    <a href="{% url 'tutor_detail' tutor.id %}?subject={{ selected_subject }}" class="btn btn-primary btn-sm">View Profile</a>
+                                    <a href="{% url 'create_booking' tutor.id %}?subject={{ selected_subject }}"
+                                       class="btn btn-outline btn-sm">Book Session</a>
+                                    {% else %}
+                                    <a href="{% url 'tutor_detail' tutor.id %}" class="btn btn-primary btn-sm">View Profile</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="ct-card" style="text-align:center; padding:30px; color:var(--text-muted);">
+                            <p>No tutors found for your selection. Try a different subject.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div id="tutor-loading" style="display:none; text-align:center; padding:20px; color:var(--text-muted);">
+                        Searching…
+                    </div>
+
+                {% else %}
+                <div class="ct-card" style="text-align:center; padding:40px; color:var(--text-muted);">
+                    <p style="font-size:1.5rem; margin-bottom:8px;">📚</p>
+                    <p>Select a semester above to see your subjects and find a tutor.</p>
+                </div>
+                {% endif %}
+
+            </div>
+
+            <!-- My Bookings Table -->
+            <div class="ct-section">
+                <h2 class="section-heading">My Learning Requests</h2>
+                <div class="ct-table-wrap">
+                    <table class="ct-table">
+                        <thead>
+                            <tr>
+                                <th>Subject</th>
+                                <th>Tutor</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for booking in bookings %}
+                            <tr>
+                                <td>
+                                    {{ booking.subject }}
+                                    {% if booking.learning_goal %}
+                                    <br><span style="font-size:.78rem; color:var(--text-muted);">💬 {{ booking.learning_goal }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ booking.tutor.user.first_name }} {{ booking.tutor.user.last_name }}</td>
+                                <td>{{ booking.booking_date }}</td>
+                                <td>{{ booking.booking_time }}</td>
+
+                                <td>
+    <span class="badge badge-{% if booking.status == 'Pending' %}pending{% elif booking.status == 'Accepted' %}accepted{% elif booking.status == 'Declined' %}declined{% else %}declined{% endif %}">
+        {{ booking.status }}
+    </span>
+    {% if booking.status == 'Declined' %}
+        {% if booking.cancellation_reason %}
+        <p style="font-size:.78rem; color:var(--text-muted); margin-top:4px;">
+            <strong>Reason:</strong> {{ booking.cancellation_reason }}
+        </p>
+        {% endif %}
+        {% if booking.proposed_date %}
+        <p style="font-size:.78rem; color:#166534; margin-top:2px;">
+            <strong>Suggested:</strong> {{ booking.proposed_date }} at {{ booking.proposed_time }}
+        </p>
+        {% endif %}
+    {% endif %}
+</td>
+
+                                 <td>
+                                     {% if booking.status == "Accepted" %}
+<a href="{% url 'booking_chat' booking.id %}" class="btn btn-outline btn-sm">
+    💬 Chat{% if booking.unread_count > 0 %} <span class="badge badge-pending" style="margin-left:4px;">{{ booking.unread_count }}</span>{% endif %}
+</a>
+{% if not booking.is_paid %}
+<a href="{% url 'pay_booking' booking.id %}" class="btn btn-primary btn-sm">💳 Pay Now</a>
+<a href="{% url 'cancel_booking_student' booking.id %}" class="btn btn-danger btn-sm"
+   data-confirm="Cancel your session with {{ booking.tutor.user.first_name }}?">Cancel</a>
+{% else %}
+<span style="color:#16a34a; font-weight:700; font-size:.85rem;">✓ Paid</span>
+<a href="{% url 'create_review' booking.tutor.id %}" class="btn btn-outline btn-sm">Leave Review</a>
+<span style="font-size:.78rem; color:var(--text-muted); display:block; margin-top:4px;">
+    💬 Chat with tutor to cancel or for any inquiries
+</span>
+{% endif %}
+
+{% elif booking.status == "Declined" %}
+    {% if booking.proposed_date %}
+    <a href="{% url 'accept_proposed_time' booking.id %}" class="btn btn-primary btn-sm"
+       data-confirm="Accept the tutor's proposed time: {{ booking.proposed_date }} at {{ booking.proposed_time }}?">
+        ✅ Accept New Time
+    </a>
+    {% endif %}
+    <a href="{% url 'delete_booking' booking.id %}" class="btn btn-outline btn-sm"
+       data-confirm="Remove this booking from your list?">Remove</a>
+{% elif booking.status == "Cancelled" %}
+    <a href="{% url 'delete_booking' booking.id %}" class="btn btn-outline btn-sm"
+       data-confirm="Remove this booking from your list?">Remove</a>
+{% elif booking.status == "Pending" %}
+    <a href="{% url 'cancel_booking_student' booking.id %}" class="btn btn-danger btn-sm"
+       data-confirm="Cancel your pending request with {{ booking.tutor.user.first_name }}?">Cancel</a>
+  {% else %}
+                                    —
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" style="text-align:center; color:var(--text-muted); padding:20px;">
+                                    No bookings yet.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                {% if bookings.has_other_pages %}
+                <div style="display:flex; justify-content:center; gap:8px; margin-top:20px; flex-wrap:wrap;">
+                    {% if bookings.has_previous %}
+                    <a href="?page={{ bookings.previous_page_number }}" class="btn btn-outline btn-sm">← Previous</a>
+                    {% endif %}
+                    {% for num in bookings.paginator.page_range %}
+                        {% if bookings.number == num %}
+                        <span class="btn btn-primary btn-sm">{{ num }}</span>
+                        {% else %}
+                        <a href="?page={{ num }}" class="btn btn-outline btn-sm">{{ num }}</a>
+                        {% endif %}
+                    {% endfor %}
+                    {% if bookings.has_next %}
+                    <a href="?page={{ bookings.next_page_number }}" class="btn btn-outline btn-sm">Next →</a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Upcoming Sessions -->
+            <div class="ct-section">
+                <h2 class="section-heading">Upcoming Sessions</h2>
+                {% if upcoming_sessions %}
+                <div class="ct-table-wrap">
+                    <table class="ct-table">
+                        <thead>
+                            <tr>
+                                <th>Tutor</th>
+                                <th>Subject</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for session in upcoming_sessions %}
+                            <tr>
+                                <td>{{ session.tutor.user.first_name }} {{ session.tutor.user.last_name }}</td>
+                                <td>{{ session.subject }}</td>
+                                <td>{{ session.booking_date }}</td>
+                                <td>{{ session.booking_time }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="ct-card" style="text-align:center; padding:40px; color:var(--text-muted);">
+                    <p style="font-size:2rem; margin-bottom:8px;">📅</p>
+                    <p>No upcoming sessions yet. Book a session to get started!</p>
+                </div>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

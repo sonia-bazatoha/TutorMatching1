@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-wrapper">
+    <div class="page-hero">
+        <h1>Contact <span class="hero-accent">Us</span></h1>
+        <p>Have a question, suggestion, or need help? We would love to hear from you.</p>
+    </div>
+
+    <main class="main-content" style="display:flex; justify-content:center; padding-top:48px; padding-bottom:64px;">
+        <div class="form-card" style="max-width:640px; width:100%;">
+            <h2 class="section-heading">Send Us a Message</h2>
+
+            <form method="POST">
+                {% csrf_token %}
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                    <div class="form-group">
+                        <label class="form-label" for="id_name">Full Name</label>
+                        {{ form.name }}
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="id_email">Email Address</label>
+                        {{ form.email }}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="id_subject">Subject</label>
+                    {{ form.subject }}
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="id_message">Message</label>
+                    {{ form.message }}
+                </div>
+
+                <div class="action-row">
+                    <button class="btn btn-primary" type="submit">Send Message</button>
+                    <a class="btn btn-outline" href="{% url 'home' %}">Cancel</a>
+                </div>
+            </form>
+
+            <!-- Contact Info -->
+            <div style="margin-top:32px; border-top:1px solid var(--border); padding-top:24px;">
+                <h3 style="font-size:1rem; font-weight:700; color:var(--navy); margin-bottom:12px;">Other Ways to Reach Us</h3>
+                <div style="display:flex; flex-direction:column; gap:8px; font-size:.92rem; color:var(--text-muted);">
+                    <p>📧 support@campustutor.ug</p>
+                    <p>📍 Cavendish University, Kampala, Uganda</p>
+                    <p>🕐 Monday – Friday, 8:00 AM – 5:00 PM</p>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

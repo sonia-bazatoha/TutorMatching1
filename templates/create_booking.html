@@ -1,0 +1,246 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-wrapper">
+    <div class="page-hero">
+        <h1>Book a <span class="hero-accent">Session</span></h1>
+        <p>Choose a date and time for your session.</p>
+    </div>
+
+    <main class="main-content">
+        <div class="booking-layout">
+
+            <!-- Tutor info panel -->
+            <div>
+                <div class="ct-section">
+                    <h2 class="section-heading">Your Tutor</h2>
+                    <div class="ct-card" style="border-top:none; border-left:5px solid var(--gold);">
+                        <div style="display:flex; align-items:center; gap:16px; margin-bottom:16px;">
+                            <div class="tutor-avatar" style="width:60px; height:60px; font-size:1.5rem;">
+                                {% if tutor.user.profile_picture %}
+                                <img src="{{ tutor.user.profile_picture.url }}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+                                {% else %}
+                                👤
+                                {% endif %}
+                            </div>
+                            <div>
+                                <h3 style="font-size:1.1rem; color:var(--navy);">{{ tutor.user.first_name }} {{ tutor.user.last_name }}</h3>
+                                <p style="font-size:.85rem; color:var(--text-muted);">{{ tutor.qualification }}</p>
+                            </div>
+                        </div>
+                        <hr class="divider" style="margin:12px 0;">
+                        <p style="font-size:.9rem;"><strong>Rate:</strong> UGX {{ tutor.hourly_rate }} / hour</p>
+                    </div>
+                </div>
+
+                {% if subject %}
+                <div class="ct-section">
+                    <div class="ct-card" style="background:var(--light-grey); border-top:none;">
+                        <h4 style="color:var(--navy); margin-bottom:10px;">📘 Your Booking</h4>
+                        <p style="font-size:.9rem;"><strong>Programme:</strong> {{ programme }}</p>
+                        <p style="font-size:.9rem; margin-top:4px;"><strong>Year:</strong> {{ year_of_study }}</p>
+                        <p style="font-size:.9rem; margin-top:4px;"><strong>Subject:</strong> {{ subject.name }}</p>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="ct-section">
+                    <div class="ct-card" style="background:var(--light-grey); border-top:none;">
+                        <h4 style="color:var(--navy); margin-bottom:8px;">💡 Tips for a great session</h4>
+                        <ul class="benefit-list" style="font-size:.85rem;">
+                            <li>Be specific about which topics you need help with</li>
+                            <li>Share any materials or past exams</li>
+                            <li>Confirm the meeting format (in-person or online)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Smart booking form -->
+            <div>
+                <div class="ct-section">
+                    <h2 class="section-heading">Choose Date & Time</h2>
+                    <div class="form-card" style="max-width:100%;">
+
+                        {% if not subject %}
+                        <div class="ct-card" style="text-align:center; padding:24px; color:var(--text-muted); border-top:none;">
+                            <p>No subject selected. Please <a href="{% url 'student_dashboard' %}" style="color:var(--navy); font-weight:700;">go back</a> and select a subject first.</p>
+                        </div>
+                        {% elif not smart_slots %}
+                        <div class="ct-card" style="text-align:center; padding:24px; color:var(--text-muted); border-top:none;">
+                            <p>This tutor has not added any availability yet. Please check back later.</p>
+                        </div>
+                        {% else %}
+
+                        {% if messages %}
+                            {% for message in messages %}
+                            <p style="color:red; font-size:.9rem; margin-bottom:12px;">{{ message }}</p>
+                            {% endfor %}
+                        {% endif %}
+
+                        <form method="POST" id="booking-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="subject_id" value="{{ subject_id }}">
+                            <input type="hidden" name="booking_date" id="hidden-date">
+                            <input type="hidden" name="booking_time" id="hidden-time">
+
+                            <!-- Step 1: Pick a day -->
+                            <div class="form-group">
+                                <label class="form-label">Step 1 — Select an Available Day</label>
+                                <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:8px;">
+                                    {% for slot in smart_slots %}
+                                    <button type="button"
+                                            class="btn btn-outline btn-sm day-btn"
+                                            data-slot-index="{{ forloop.counter0 }}"
+                                            onclick="selectDay(this, {{ forloop.counter0 }})">
+                                        📅 {{ slot.availability.day }}
+                                        <span style="font-size:.75rem; display:block; color:var(--text-muted);">
+                                            {{ slot.availability.start_time|time:"H:i" }} – {{ slot.availability.end_time|time:"H:i" }}
+                                        </span>
+                                    </button>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <!-- Step 2: Pick a date (shown after day selected) -->
+                            <div class="form-group" id="date-section" style="display:none;">
+                                <label class="form-label">Step 2 — Select a Date</label>
+                                <div id="date-options" style="display:flex; flex-wrap:wrap; gap:10px; margin-top:8px;"></div>
+                            </div>
+
+                            <!-- Step 3: Pick a time (shown after date selected) -->
+                            <div class="form-group" id="time-section" style="display:none;">
+                                <label class="form-label">Step 3 — Select a Time</label>
+                                <div id="time-options" style="display:flex; flex-wrap:wrap; gap:10px; margin-top:8px;"></div>
+                            </div>
+
+                            <!-- Learning goal -->
+                            <div class="form-group" id="goal-section" style="display:none;">
+                                <label class="form-label" for="id_learning_goal">What would you like help with?</label>
+                                <textarea class="form-control" id="id_learning_goal" name="learning_goal" rows="3"
+                                          placeholder="e.g. I'm struggling with truth tables and predicate logic"></textarea>
+                            </div>
+
+                            <!-- Duration -->
+<div class="form-group" id="duration-section" style="display:none;">
+    <label class="form-label" for="id_duration">Session Duration</label>
+    <select class="form-control" id="id_duration" name="duration">
+        <option value="30">30 minutes</option>
+        <option value="60" selected>1 hour</option>
+        <option value="90">1.5 hours</option>
+        <option value="120">2 hours</option>
+    </select>
+</div>
+
+                            <!-- Submit -->
+                            <button class="btn btn-primary w-full" type="submit" id="submit-btn" style="display:none;">
+                                Send Booking Request
+                            </button>
+                        </form>
+
+                        {% endif %}
+
+                        <div class="action-row" style="margin-top:16px;">
+                            <a href="{% url 'student_dashboard' %}" class="btn btn-outline btn-sm">← Back to Dashboard</a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+<script>
+// Smart slot data from Django
+const smartSlots = [
+    {% for slot in smart_slots %}
+    {
+        day: "{{ slot.availability.day }}",
+        dates: [
+            {% for d in slot.dates %}
+            { value: "{{ d|date:'Y-m-d' }}", label: "{{ d|date:'D, d M Y' }}" },
+            {% endfor %}
+        ],
+        timeSlots: [
+            {% for t in slot.time_slots %}
+            "{{ t }}",
+            {% endfor %}
+        ]
+    },
+    {% endfor %}
+];
+
+let selectedSlotIndex = null;
+
+function selectDay(btn, index) {
+    // Reset all
+    document.querySelectorAll('.day-btn').forEach(b => {
+        b.classList.remove('btn-primary');
+        b.classList.add('btn-outline');
+    });
+    btn.classList.remove('btn-outline');
+    btn.classList.add('btn-primary');
+
+    selectedSlotIndex = index;
+    const slot = smartSlots[index];
+
+    // Populate dates
+    const dateOptions = document.getElementById('date-options');
+    dateOptions.innerHTML = slot.dates.map(d => `
+        <button type="button" class="btn btn-outline btn-sm date-btn"
+                onclick="selectDate(this, '${d.value}')">
+            ${d.label}
+        </button>
+    `).join('');
+
+    document.getElementById('date-section').style.display = 'block';
+    document.getElementById('time-section').style.display = 'none';
+    document.getElementById('goal-section').style.display = 'none';
+    document.getElementById('submit-btn').style.display = 'none';
+    document.getElementById('hidden-date').value = '';
+    document.getElementById('hidden-time').value = '';
+}
+
+function selectDate(btn, dateValue) {
+    document.querySelectorAll('.date-btn').forEach(b => {
+        b.classList.remove('btn-primary');
+        b.classList.add('btn-outline');
+    });
+    btn.classList.remove('btn-outline');
+    btn.classList.add('btn-primary');
+
+    document.getElementById('hidden-date').value = dateValue;
+
+    const slot = smartSlots[selectedSlotIndex];
+    const timeOptions = document.getElementById('time-options');
+    timeOptions.innerHTML = slot.timeSlots.map(t => `
+        <button type="button" class="btn btn-outline btn-sm time-btn"
+                onclick="selectTime(this, '${t}')">
+            🕐 ${t}
+        </button>
+    `).join('');
+
+    document.getElementById('time-section').style.display = 'block';
+    document.getElementById('goal-section').style.display = 'none';
+    document.getElementById('submit-btn').style.display = 'none';
+    document.getElementById('hidden-time').value = '';
+}
+
+function selectTime(btn, timeValue) {
+    document.querySelectorAll('.time-btn').forEach(b => {
+        b.classList.remove('btn-primary');
+        b.classList.add('btn-outline');
+    });
+    btn.classList.remove('btn-outline');
+    btn.classList.add('btn-primary');
+
+    document.getElementById('hidden-time').value = timeValue;
+    document.getElementById('goal-section').style.display = 'block';
+    document.getElementById('duration-section').style.display = 'block';
+    document.getElementById('submit-btn').style.display = 'block';
+}
+</script>
+
+{% endblock %}

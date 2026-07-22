@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-wrapper">
+    <div class="page-hero">
+        <h1>Session <span class="hero-accent">Chat</span></h1>
+        <p>Coordinate with {% if request.user == booking.student.user %}{{ booking.tutor.user.first_name }}{% else %}{{ booking.student.user.first_name }}{% endif %} about your session.</p>
+    </div>
+
+    <main class="main-content" style="max-width:700px;">
+        <div class="ct-card" style="border-top:none;">
+            <div id="chat-messages" style="display:flex; flex-direction:column; gap:10px; max-height:420px; overflow-y:auto; margin-bottom:16px; padding:4px;">
+                <p style="text-align:center; color:var(--text-muted); font-size:.9rem;">Loading messages…</p>
+            </div>
+
+            <form id="chat-form" style="display:flex; gap:10px;">
+                {% csrf_token %}
+                <input class="form-control" type="text" id="chat-input" placeholder="Type a message…" autocomplete="off" required>
+                <button class="btn btn-primary" type="submit">Send</button>
+            </form>
+        </div>
+
+        <div class="action-row" style="margin-top:16px;">
+            {% if request.user == booking.student.user %}
+            <a href="{% url 'student_dashboard' %}" class="btn btn-outline btn-sm">← Back to Dashboard</a>
+            {% else %}
+            <a href="{% url 'tutor_dashboard' %}" class="btn btn-outline btn-sm">← Back to Dashboard</a>
+            {% endif %}
+        </div>
+    </main>
+</div>
+
+<script>
+    window.CHAT_BOOKING_ID = {{ booking.id }};
+</script>
+{% endblock %}
