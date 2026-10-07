@@ -97,3 +97,12 @@ http://127.0.0.1:8000/
 ### Database
 
 The project currently uses SQLite for development.
+
+
+## Author
+
+**Sonia Mukwinyi Bazatoha**
+
+Computer Science Graduate | Python & Django Developer
+
+GitHub: https://github.com/sonia-bazatoha
