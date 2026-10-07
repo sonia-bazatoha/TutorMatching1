@@ -48,38 +48,32 @@ The project follows Django's application structure, with the backend handling ap
 
 ### Prerequisites
 
-Make sure you have Python installed on your computer.
+Make sure you have Python and Pipenv installed on your computer.
 
 ### Installation
 
 Clone the repository:
 
 ```bash
-git clone YOUR_GITHUB_REPOSITORY_URL
+git clone https://github.com/sonia-bazatoha/TutorMatching1.git
 ```
 
 Move into the project directory:
 
 ```bash
-cd TutorMatching
+cd TutorMatching1
 ```
 
-Create and activate a virtual environment:
+Install the project dependencies:
 
 ```bash
-python -m venv venv
+pipenv install
 ```
 
-On Windows:
+Activate the virtual environment:
 
 ```bash
-venv\Scripts\activate
-```
-
-Install the required dependencies:
-
-```bash
-pip install -r requirements.txt
+pipenv shell
 ```
 
 Run the database migrations:
@@ -94,20 +88,12 @@ Start the development server:
 python manage.py runserver
 ```
 
-Open the application at:
+Open the application in your browser:
 
 ```text
 http://127.0.0.1:8000/
 ```
 
-## Current Status
+### Database
 
-The project is a learning and portfolio project developed to practice building a complete Django web application, including database design, authentication, role management, forms, application logic, and frontend functionality.
-
-## Author
-
-""Sonia Mukwinyi Bazatoha""
-
-Computer Science Graduate | Python & Django Developer
-
-GitHub: https://github.com/sonia-bazatoha
+The project currently uses SQLite for development.
