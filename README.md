@@ -98,7 +98,6 @@ http://127.0.0.1:8000/
 
 The project currently uses SQLite for development.
 
-
 ## Author
 
 **Sonia Mukwinyi Bazatoha**
